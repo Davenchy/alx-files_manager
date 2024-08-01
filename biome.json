@@ -172,7 +172,10 @@
     }
   },
   "javascript": {
-    "formatter": { "indentStyle": "space" },
+    "formatter": { 
+      "indentStyle": "space",
+      "quoteStyle": "single"
+    },
     "globals": ["Atomics", "SharedArrayBuffer"]
   },
   "json": { "formatter": { "indentStyle": "space" } },
