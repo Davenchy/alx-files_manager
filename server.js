@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import router from './routes/index';
 import {
   jsonResponseMiddleware,
@@ -9,7 +8,7 @@ import {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(jsonResponseMiddleware);
 app.use(errorResponseMiddleware);
 app.use(router);
