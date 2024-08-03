@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { status, stats } from '../controllers/AppController';
-import postNew from '../controllers/UsersController';
+import UsersController from '../controllers/UsersController';
 
 const router = Router();
 
@@ -9,6 +9,6 @@ router.get('/status', status);
 router.get('/stats', stats);
 
 // users
-router.post('/users', postNew);
+router.post('/users', UsersController.postNew);
 
 export default router;
