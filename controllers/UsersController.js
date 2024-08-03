@@ -4,7 +4,7 @@ import dbClient from '../utils/db';
 /**
  * A route controller to add a new user
  */
-export async function postNew(req, res) {
+export default async function postNew(req, res) {
   const { email, password } = req.body;
 
   if (!email) {
