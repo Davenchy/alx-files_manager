@@ -1,9 +1,10 @@
 import { hashPassword } from '../utils/password_hashing';
+import dbClient from '../utils/db';
 
 /**
  * A route controller to add a new user
  */
-export function postNew(req, res) {
+export async function postNew(req, res) {
   const { email, password } = req.body;
 
   if (!email) {
@@ -14,11 +15,21 @@ export function postNew(req, res) {
     return res.error('Missing password');
   }
 
-  // !TODO: check if email is already exists
+  // check if a user with the same email is already exist
+  const foundUser = await dbClient.users.findOne({ email });
+  if (foundUser) {
+    return res.error('Already exist');
+  }
 
   const hashedPassword = hashPassword(password);
 
-  // !TODO: save the user to the users collection
+  const results = await dbClient.users.insertOne({
+    email,
+    password: hashedPassword,
+  });
 
-  // !TODO: return the user as an object of email and db generated id
+  const user = results.ops[0];
+
+  res.status(201);
+  return res.json({ id: user._id, email: user.email });
 }
