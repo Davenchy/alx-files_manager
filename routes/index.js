@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { status, stats } from '../controllers/AppController';
+import { getStatus, getStats } from '../controllers/AppController';
 
 const router = Router();
 
-router.get('/status', status);
-router.get('/stats', stats);
+router.get('/status', getStatus);
+router.get('/stats', getStats);
 
 export default router;
