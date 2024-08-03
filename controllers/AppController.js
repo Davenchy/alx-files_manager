@@ -1,22 +1,24 @@
 import redisClient from '../utils/redis';
-// import dbClient from '../utils/db';
+import dbClient from '../utils/db';
 
-function status(request, response) {
+function getStatus(request, response) {
   const data = {
     redis: redisClient.isAlive(),
-    // db: dbClient.isAlive(),
+    db: dbClient.isAlive(),
   };
   response.statusCode = 200;
-  response.end(JSON.stringify(data));
+  response.json(data);
+  response.end();
 }
 
-async function stats(request, response) {
+async function getStats(request, response) {
   const data = {
-    // users: await dbClient.nbUsers(),
-    // files: await dbClient.nbFiles(),
+    users: await dbClient.nbUsers(),
+    files: await dbClient.nbFiles(),
   };
   response.statusCode = 200;
-  response.end(JSON.stringify(data));
+  response.json(data);
+  response.end();
 }
 
-export { status, stats };
+export { getStatus, getStats };
