@@ -29,7 +29,5 @@ export default async function postNew(req, res) {
   });
 
   const user = results.ops[0];
-
-  res.status(201);
-  return res.json({ id: user._id, email: user.email });
+  return res.json({ id: user._id, email: user.email }, 201);
 }
