@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { getStatus, getStats } from '../controllers/AppController';
+import AppController from '../controllers/AppController';
 import UsersController from '../controllers/UsersController';
 import AuthController from '../controllers/AuthController';
 
 const router = Router();
 
 // check stats and status
-router.get('/status', getStatus);
-router.get('/stats', getStats);
+router.get('/status', AppController.getStatus);
+router.get('/stats', AppController.getStats);
 
 // users
 router.post('/users', UsersController.postNew);
