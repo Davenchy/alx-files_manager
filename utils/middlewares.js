@@ -75,3 +75,40 @@ export const AuthGuard = async (req, res, next) => {
 
   return next();
 };
+
+/**
+ * An express middleware that checks if the file exists and belongs to the user.
+ *
+ * Uses `req.params.id` as the file id.
+ *
+ * > Make sure to add after `AuthGuard` middleware or it will throw an error.
+ *
+ * It provides:
+ *   - **document**: The file document.
+ *   - **documentId**: The file id.
+ *
+ */
+export const FileLoader = async (req, res, next) => {
+  const { userId } = req;
+  const fileId = req.params.id;
+
+  if (!userId) {
+    throw new Error('Use AuthGuard middleware first');
+  }
+
+  const document = await dbClient.files.findOne({
+    _id: new ObjectId(fileId),
+    userId: new ObjectId(userId),
+  });
+
+  if (!document) {
+    return res.sendError('Not found', 404);
+  }
+
+  req.document = document;
+  req.documentId = fileId;
+
+  return next();
+};
+// eslint-disable-next-line no-multiple-empty-lines
+
