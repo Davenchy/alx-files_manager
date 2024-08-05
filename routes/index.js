@@ -4,7 +4,7 @@ import UsersController from '../controllers/UsersController';
 import AuthController from '../controllers/AuthController';
 import FilesController from '../controllers/FilesController';
 
-import { AuthGuard } from '../utils/middlewares';
+import { AuthGuard, FileLoader } from '../utils/middlewares';
 
 const router = Router();
 
@@ -22,5 +22,17 @@ router.get('/disconnect', AuthGuard, AuthController.getDisconnect);
 
 // files
 router.post('/files', AuthGuard, FilesController.postUpload);
+router.put(
+  '/files/:id/publish',
+  AuthGuard,
+  FileLoader,
+  FilesController.putPublish,
+);
+router.put(
+  '/files/:id/unpublish',
+  AuthGuard,
+  FileLoader,
+  FilesController.putUnpublish,
+);
 
 export default router;

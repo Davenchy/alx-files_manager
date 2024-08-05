@@ -4,6 +4,13 @@ import { writeFileToDisk } from '../utils/disk';
 
 export const fileTypes = ['folder', 'file', 'image'];
 
+export const serializeFileDocument = (document) => {
+  // eslint-disable-next-line object-curly-newline
+  const { name, userId, type, isPublic, parentId } = document;
+  // eslint-disable-next-line object-curly-newline
+  return { id: document._id, userId, name, type, isPublic, parentId };
+};
+
 export default class FilesController {
   static async postUpload(req, res) {
     // eslint-disable-next-line object-curly-newline
@@ -40,7 +47,7 @@ export default class FilesController {
       userId: new ObjectId(req.userId),
       name,
       type,
-      isPiclic: isPublic || false,
+      isPublic: isPublic || false,
       parentId: parentId || 0,
     };
 
@@ -52,11 +59,25 @@ export default class FilesController {
     // store document to DB
     const document = (await dbClient.files.insertOne(documentData)).ops[0];
 
-    // format response: rename _id to id and delete localPath
-    document.id = document._id;
-    delete document._id;
-
     // send document data
-    return res.send(document);
+    return res.send(serializeFileDocument(document));
+  }
+
+  static async putPublish(req, res) {
+    await dbClient.files.updateOne(
+      { _id: new ObjectId(req.documentId) },
+      { $set: { isPublic: true } },
+    );
+
+    res.send(serializeFileDocument({ ...req.document, isPublic: true }));
+  }
+
+  static async putUnpublish(req, res) {
+    await dbClient.files.updateOne(
+      { _id: new ObjectId(req.documentId) },
+      { $set: { isPublic: false } },
+    );
+
+    res.send(serializeFileDocument({ ...req.document, isPublic: false }));
   }
 }
