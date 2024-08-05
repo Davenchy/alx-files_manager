@@ -17,6 +17,6 @@ router.get('/users/me', AuthGuard, UsersController.getMe);
 
 // auth
 router.get('/connect', AuthController.getConnect);
-router.get('/disconnect', AuthController.getDisconnect);
+router.get('/disconnect', AuthGuard, AuthController.getDisconnect);
 
 export default router;
