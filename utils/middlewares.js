@@ -1,29 +1,45 @@
 /**
- * An express middleware that provides `res.json` that responses with a json
- * data in the body of the response.
- * Also sets the `Content-Type` header to `application/json`.
+ * An express middleware that provides `res.sendError` function that responses
+ * with an error structure.
  *
- * prototype `res.json(obj: object, status: number = 200)`
+ * Usage:
+ * ```ts
+ * res.sendError(error: string);
+ * res.sendError(error: string, status: number);
+ * res.sendError(error: string, payload: object);
+ * res.sendError(error: string, payload: object, status: number);
+ * ```
+ *
+ * By default the **status** is `400` and the **payload** is `{}`.
+ *
+ * The error structure object:
+ * ```json
+ * {
+ *   "error": "error message...",
+ *   ...optional payload
+ * }```
  */
-export const jsonResponseMiddleware = (_, res, next) => {
-  res.json = (obj, status = 200) => {
-    const data = JSON.stringify(obj);
-    res.set('Content-Type', 'application/json');
-    res.status(status).send(data);
+const errorResponseMiddleware = (_, res, next) => {
+  res.sendError = (errorMessage, optA, optB) => {
+    let status = 400;
+    let payload = {};
+
+    if (optA) {
+      if (typeof optA === 'number') {
+        status = optA;
+      } else if (typeof optA === 'object') {
+        payload = optA;
+
+        if (optB && typeof optB === 'number') {
+          status = optB;
+        }
+      }
+    }
+
+    res.status(status).send({ error: errorMessage, ...payload });
   };
 
   next();
 };
 
-/**
- * An express middleware that provides `res.error` that responses with a json
- * error structure.
- *
- * prototype `res.error(error: string, status: number = 400)`
- *
- * Example error object: `{ "error": "error message..." }`
- */
-export const errorResponseMiddleware = (_, res, next) => {
-  res.error = (error, status = 400) => res.json({ error }, status);
-  next();
-};
+export default errorResponseMiddleware;
