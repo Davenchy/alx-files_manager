@@ -1,6 +1,6 @@
 import express from 'express';
 import router from './routes/index';
-import errorResponseMiddleware from './utils/middlewares';
+import { errorResponseMiddleware } from './utils/middlewares';
 
 const app = express();
 const PORT = process.env.PORT || 5000;

@@ -1,7 +1,5 @@
-import { ObjectId } from 'mongodb';
 import { hashPassword } from '../utils/password_hashing';
 import dbClient from '../utils/db';
-import redisClient from '../utils/redis';
 
 /**
  * A controller for the users endpoints
