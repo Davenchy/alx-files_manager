@@ -3,8 +3,10 @@ import { hashPassword } from './password_hashing';
 
 async function isUserExists(email, password) {
   const hashedPassword = hashPassword(password);
-  const user = await dbClient.users.findOne({ email, password: hashedPassword });
-  console.log(email, hashedPassword);
+  const user = await dbClient.users.findOne({
+    email,
+    password: hashedPassword,
+  });
   if (!user) {
     return false;
   }
