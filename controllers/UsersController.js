@@ -14,17 +14,17 @@ class UsersController {
     const { email, password } = req.body;
 
     if (!email) {
-      return res.error('Missing email');
+      return res.sendError('Missing email');
     }
 
     if (!password) {
-      return res.error('Missing password');
+      return res.sendError('Missing password');
     }
 
     // check if a user with the same email is already exist
     const foundUser = await dbClient.users.findOne({ email });
     if (foundUser) {
-      return res.error('Already exist');
+      return res.sendError('Already exist');
     }
 
     const hashedPassword = hashPassword(password);
@@ -35,7 +35,7 @@ class UsersController {
     });
 
     const user = results.ops[0];
-    return res.json({ id: user._id, email: user.email }, 201);
+    return res.status(201).send({ id: user._id, email: user.email });
   }
 
   static async getMe(req, res) {
