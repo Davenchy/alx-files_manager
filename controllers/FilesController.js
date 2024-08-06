@@ -1,7 +1,9 @@
 import { ObjectId } from 'mongodb';
+import BullQueue from 'bull';
 import dbClient from '../utils/db';
 import { writeFileToDisk } from '../utils/disk';
 
+const thumbnailsQueue = new BullQueue('thumbnails');
 export const fileTypes = ['folder', 'file', 'image'];
 
 export const serializeFileDocument = (document) => {
@@ -58,6 +60,14 @@ export default class FilesController {
 
     // store document to DB
     const document = (await dbClient.files.insertOne(documentData)).ops[0];
+
+    // generate thumbnails for images
+    if (type === 'image') {
+      thumbnailsQueue.add({
+        userId: req.userId,
+        fileId: document._id.toString(),
+      });
+    }
 
     // send document data
     return res.send(serializeFileDocument(document));
