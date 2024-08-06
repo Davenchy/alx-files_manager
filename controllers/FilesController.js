@@ -63,6 +63,27 @@ export default class FilesController {
     return res.send(serializeFileDocument(document));
   }
 
+  static getShow(req, res) {
+    return res.send(serializeFileDocument(req.document));
+  }
+
+  static async getIndex(req, res) {
+    const { userId } = req;
+    const parentId = req.query.parentId || 0;
+    const page = parseInt(req.query.page, 10) || 0;
+    const limit = 20;
+
+    const documents = await dbClient.files
+      .aggregate([
+        { $match: { userId: new ObjectId(userId), parentId } },
+        { $skip: limit * page },
+        { $limit: limit },
+      ])
+      .toArray();
+
+    res.send(documents);
+  }
+
   static async putPublish(req, res) {
     await dbClient.files.updateOne(
       { _id: new ObjectId(req.documentId) },

@@ -21,6 +21,8 @@ router.get('/connect', AuthController.getConnect);
 router.get('/disconnect', AuthGuard, AuthController.getDisconnect);
 
 // files
+router.get('/files', AuthGuard, FilesController.getIndex);
+router.get('/files/:id', AuthGuard, FileLoader, FilesController.getShow);
 router.post('/files', AuthGuard, FilesController.postUpload);
 router.put(
   '/files/:id/publish',
