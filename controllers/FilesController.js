@@ -1,7 +1,10 @@
-import { ObjectId } from 'mongodb';
+import { readFile } from 'fs/promises';
 import BullQueue from 'bull';
+import mime from 'mime-types';
+import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
 import { writeFileToDisk } from '../utils/disk';
+import redisClient from '../utils/redis';
 
 const thumbnailsQueue = new BullQueue('thumbnails');
 export const fileTypes = ['folder', 'file', 'image'];
@@ -110,5 +113,35 @@ export default class FilesController {
     );
 
     res.send(serializeFileDocument({ ...req.document, isPublic: false }));
+  }
+
+  static async getFile(req, res) {
+    const fileId = req.params.id;
+    const token = req.headers['x-token'] || '';
+    const userId = (await redisClient.get(`auth_${token}`)) || '';
+    const file = await dbClient.files.findOne({ _id: ObjectId(fileId) });
+
+    if (!file) {
+      return res.sendError('Not found', 404);
+    }
+
+    if (!file.isPublic && file.userId.toString() !== userId.toString()) {
+      return res.sendError('Not found', 404);
+    }
+
+    if (file.type === 'folder') {
+      return res.sendError("A folder doesn't have content");
+    }
+
+    if (!file.localPath) {
+      return res.sendError('Not found', 404);
+    }
+
+    const fileContent = await readFile(file.localPath);
+
+    const mimeType = mime.lookup(file.name);
+    res.setHeader('Content-Type', mimeType);
+
+    return res.send(fileContent);
   }
 }
