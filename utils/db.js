@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb';
+import { DB_HOST, DB_PORT, DB_NAME } from './constants';
 
 class DBClient {
   /**
@@ -11,9 +12,9 @@ class DBClient {
    * @param {string} database - uses **DB_NAME** env var if not provided or `files_manager`
    */
   constructor(host, port, database) {
-    this.host = host || process.env.DB_HOST || 'localhost';
-    this.port = port || process.env.DB_PORT || 27017;
-    this.database = database || process.env.DB_NAME || 'files_manager';
+    this.host = host || DB_HOST;
+    this.port = port || DB_PORT;
+    this.database = database || DB_NAME;
 
     MongoClient.connect(
       `mongodb://${this.host}:${this.port}`,

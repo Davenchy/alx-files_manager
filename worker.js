@@ -3,8 +3,8 @@ import imageThumbnail from 'image-thumbnail';
 import { createReadStream, createWriteStream, ReadStream } from 'fs';
 import { ObjectId } from 'mongodb';
 import dbClient from './utils/db';
+import { THUMBNAIL_WIDTH } from './utils/constants';
 
-const THUMBNAIL_WIDTH = [500, 250, 100];
 const fileQueue = new BullQueue('fileQueue');
 
 /**

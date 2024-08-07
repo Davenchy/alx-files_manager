@@ -2,14 +2,7 @@ import { randomUUID } from 'crypto';
 import { Readable } from 'stream';
 import { createWriteStream, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
-
-/**
- * A constant that holds the root path to store files.
- * @constant
- * @type {string}
- * @default
- */
-export const ROOT_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
+import { ROOT_PATH } from './constants';
 
 /**
  * Decodes the base64 file content and writes it to the disk.
@@ -25,7 +18,7 @@ export const ROOT_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
  *
  * @returns {string} The full file path.
  */
-export function writeFileToDisk(base64FileContent, rootPath = ROOT_PATH) {
+function writeFileToDisk(base64FileContent, rootPath = ROOT_PATH) {
   // Create root path if not exists
   if (!existsSync(rootPath)) {
     mkdirSync(rootPath);
@@ -47,3 +40,7 @@ export function writeFileToDisk(base64FileContent, rootPath = ROOT_PATH) {
 
   return fileFullPath;
 }
+
+export default {
+  writeFileToDisk,
+};
