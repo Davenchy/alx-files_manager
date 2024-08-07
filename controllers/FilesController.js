@@ -4,10 +4,9 @@ import mime from 'mime-types';
 import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
 import DiskUtils from '../utils/disk';
-import { THUMBNAIL_WIDTH } from '../utils/constants';
+import { THUMBNAIL_WIDTH, FILE_TYPES } from '../utils/constants';
 
 const thumbnailsQueue = new BullQueue('thumbnails');
-export const fileTypes = ['folder', 'file', 'image'];
 
 export const serializeFileDocument = (document) => {
   // eslint-disable-next-line object-curly-newline
@@ -25,7 +24,7 @@ export default class FilesController {
       return res.sendError('Missing name');
     }
 
-    if (!type || fileTypes.indexOf(type) === -1) {
+    if (!type || FILE_TYPES.indexOf(type) === -1) {
       return res.sendError('Missing type');
     }
 

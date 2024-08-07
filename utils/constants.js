@@ -50,3 +50,11 @@ export const ROOT_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
  * @type {number[]}
  */
 export const THUMBNAIL_WIDTH = [500, 250, 100];
+
+// Files
+/**
+ * Array of file types
+ * @constant
+ * @type {string[]}
+ */
+export const FILE_TYPES = ['folder', 'file', 'image'];
