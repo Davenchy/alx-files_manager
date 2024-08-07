@@ -3,8 +3,8 @@ import BullQueue from 'bull';
 import mime from 'mime-types';
 import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
-import { writeFileToDisk } from '../utils/disk';
 import redisClient from '../utils/redis';
+import DiskUtils from '../utils/disk';
 
 const thumbnailsQueue = new BullQueue('thumbnails');
 export const fileTypes = ['folder', 'file', 'image'];
@@ -58,7 +58,7 @@ export default class FilesController {
 
     if (type === 'file') {
       // write file to dist and store the absolute path
-      documentData.localPath = writeFileToDisk(data);
+      documentData.localPath = DiskUtils.writeFileToDisk(data);
     }
 
     // store document to DB
