@@ -3,6 +3,20 @@ import redisClient from '../utils/redis';
 import isUserExists from '../utils/auth';
 
 export default class AuthController {
+  /**
+   * Express route controller to login a user.
+   *
+   * Expects the HTTP Header `Authorization` set to `Basic {CREDENTIALS}`
+   *
+   * The `CREDENTIALS` is the `email` and `password` both are set in
+   * the form `{email}:{password}`, and encoded in base64.
+   *
+   * This controller will respond with JSON object contains the key `token` on
+   * success.
+   *
+   * On any route that requires authentication, send the request with the HTTP
+   * Header `X-Token` set to `token`.
+   */
   static async getConnect(req, res) {
     const authHeader = req.headers.authorization;
 

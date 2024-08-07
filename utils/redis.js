@@ -1,11 +1,12 @@
 import { createClient } from 'redis';
 import { promisify } from 'util';
+import { REDIS_HOST, REDIS_PORT } from './constants';
 
 class RedisClient {
   constructor() {
     this.client = createClient({
-      host: '127.0.0.1',
-      port: 6379,
+      host: REDIS_HOST,
+      port: REDIS_PORT,
     });
 
     this.client.on('error', (error) => {
