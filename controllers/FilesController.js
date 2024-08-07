@@ -1,10 +1,10 @@
-import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
 import BullQueue from 'bull';
 import mime from 'mime-types';
 import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
-import redisClient from '../utils/redis';
 import DiskUtils from '../utils/disk';
+import { THUMBNAIL_WIDTH } from '../utils/constants';
 
 const thumbnailsQueue = new BullQueue('thumbnails');
 export const fileTypes = ['folder', 'file', 'image'];
@@ -56,8 +56,8 @@ export default class FilesController {
       parentId: parentId || 0,
     };
 
-    if (type === 'file') {
-      // write file to dist and store the absolute path
+    if (type !== 'folder') {
+      // write the file to the disk and store the absolute path
       documentData.localPath = DiskUtils.writeFileToDisk(data);
     }
 
@@ -94,7 +94,7 @@ export default class FilesController {
       ])
       .toArray();
 
-    res.send(documents);
+    res.send(documents.map((doc) => serializeFileDocument(doc)));
   }
 
   static async putPublish(req, res) {
@@ -116,16 +116,10 @@ export default class FilesController {
   }
 
   static async getFile(req, res) {
-    const fileId = req.params.id;
-    const token = req.headers['x-token'] || '';
-    const userId = (await redisClient.get(`auth_${token}`)) || '';
-    const file = await dbClient.files.findOne({ _id: ObjectId(fileId) });
+    const { document: file } = req;
+    const { size } = req.query;
 
-    if (!file) {
-      return res.sendError('Not found', 404);
-    }
-
-    if (!file.isPublic && file.userId.toString() !== userId.toString()) {
+    if (!file.isPublic) {
       return res.sendError('Not found', 404);
     }
 
@@ -137,11 +131,22 @@ export default class FilesController {
       return res.sendError('Not found', 404);
     }
 
-    const fileContent = await readFile(file.localPath);
+    // set file path also support thumbnails if size is provided
+    let filePath = file.localPath;
+    if (size && THUMBNAIL_WIDTH.indexOf(size.toString()) !== -1) {
+      filePath = `${filePath}_${size}`;
+    }
 
+    // make sure file is exist on disk before sending
+    if (!existsSync(filePath)) {
+      return res.sendError('Not found', 404);
+    }
+
+    // detect and set content type
     const mimeType = mime.lookup(file.name);
     res.setHeader('Content-Type', mimeType);
 
-    return res.send(fileContent);
+    // send file content
+    return res.sendFile(filePath);
   }
 }
