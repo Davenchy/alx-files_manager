@@ -3,6 +3,7 @@ import BullQueue from 'bull';
 import mime from 'mime-types';
 import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
+import redisClient from '../utils/redis';
 import DiskUtils from '../utils/disk';
 import { THUMBNAIL_WIDTH, FILE_TYPES } from '../utils/constants';
 
@@ -115,17 +116,38 @@ export default class FilesController {
   }
 
   static async getFile(req, res) {
-    const { document: file } = req;
+    // Autherize user
+    const token = req.headers['x-token'];
+    const userId = (await redisClient.get(`auth_${token}`)) || undefined;
     const { size } = req.query;
 
-    if (!file.isPublic) {
+    // make sure X-Token header is set and user session is alive
+    if (!token || !userId) {
       return res.sendError('Not found', 404);
     }
 
+    // make sure the user account exists
+    const user = await dbClient.users.findOne({ _id: new ObjectId(userId) });
+    if (!user) {
+      return res.sendError('Not found', 401);
+    }
+
+    const file = await dbClient.files.findOne({
+      _id: new ObjectId(req.params.id),
+      userId: new ObjectId(userId),
+    });
+
+    // make sure the file exists, owned by the user, and is public
+    if (!file || !file.isPublic) {
+      return res.sendError('Not found', 404);
+    }
+
+    // make sure the document is not of type folder
     if (file.type === 'folder') {
       return res.sendError("A folder doesn't have content");
     }
 
+    // make sure the localPath field is set
     if (!file.localPath) {
       return res.sendError('Not found', 404);
     }
