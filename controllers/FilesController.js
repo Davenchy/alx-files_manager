@@ -5,9 +5,9 @@ import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 import DiskUtils from '../utils/disk';
-import { THUMBNAIL_WIDTH, FILE_TYPES } from '../utils/constants';
+import { THUMBNAIL_WIDTH, FILE_TYPES, FILE_QUEUE } from '../utils/constants';
 
-const thumbnailsQueue = new BullQueue('thumbnails');
+const fileQueue = new BullQueue(FILE_QUEUE);
 
 export const serializeFileDocument = (document) => {
   // eslint-disable-next-line object-curly-newline
@@ -66,7 +66,7 @@ export default class FilesController {
 
     // generate thumbnails for images
     if (type === 'image') {
-      thumbnailsQueue.add({
+      fileQueue.add({
         userId: req.userId,
         fileId: document._id.toString(),
       });

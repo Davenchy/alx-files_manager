@@ -1,11 +1,12 @@
 import BullQueue from 'bull';
 import imageThumbnail from 'image-thumbnail';
-import { createReadStream, createWriteStream, ReadStream } from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
+import { Readable } from 'stream';
 import { ObjectId } from 'mongodb';
 import dbClient from './utils/db';
-import { THUMBNAIL_WIDTH } from './utils/constants';
+import { THUMBNAIL_WIDTH, FILE_QUEUE } from './utils/constants';
 
-const fileQueue = new BullQueue('fileQueue');
+const fileQueue = new BullQueue(FILE_QUEUE);
 
 /**
  * Generate thumbnail file of `width` from the image file at `filePath`.
@@ -27,7 +28,7 @@ const generateThumbnails = async (filePath, width) => {
     width,
   });
 
-  const reader = new ReadStream();
+  const reader = new Readable();
   reader.push(thumbnail);
   reader.push(null);
   reader.pipe(fileWriter);
