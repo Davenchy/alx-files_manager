@@ -129,7 +129,7 @@ export default class FilesController {
     // make sure the user account exists
     const user = await dbClient.users.findOne({ _id: new ObjectId(userId) });
     if (!user) {
-      return res.sendError('Not found', 401);
+      return res.sendError('Not found', 404);
     }
 
     const file = await dbClient.files.findOne({
