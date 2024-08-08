@@ -28,8 +28,11 @@ export default class AuthController {
     const decodedString = Buffer.from(base64String, 'base64').toString('utf-8');
     const [userEmail, userPassword] = decodedString.split(':');
 
-    const userId = await isUserExists(userEmail, userPassword);
+    if (!userEmail || !userPassword) {
+      return res.sendError('Unauthorized', 401);
+    }
 
+    const userId = await isUserExists(userEmail, userPassword);
     if (!userId) {
       return res.sendError('Unauthorized', 401);
     }
