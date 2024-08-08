@@ -43,7 +43,7 @@ export default class FilesController {
       }
 
       if (file.type !== 'folder') {
-        return res.sendError('Parent is not folder');
+        return res.sendError('Parent is not a folder');
       }
     }
 
@@ -73,7 +73,7 @@ export default class FilesController {
     }
 
     // send document data
-    return res.send(serializeFileDocument(document));
+    return res.status(201).send(serializeFileDocument(document));
   }
 
   static getShow(req, res) {
@@ -154,7 +154,7 @@ export default class FilesController {
 
     // set file path also support thumbnails if size is provided
     let filePath = file.localPath;
-    if (size && THUMBNAIL_WIDTH.indexOf(Number.parseInt(size)) !== -1) {
+    if (size && THUMBNAIL_WIDTH.indexOf(Number.parseInt(size, 10)) !== -1) {
       filePath = `${filePath}_${size}`;
     }
 
