@@ -154,7 +154,7 @@ export default class FilesController {
 
     // set file path also support thumbnails if size is provided
     let filePath = file.localPath;
-    if (size && THUMBNAIL_WIDTH.indexOf(size.toString()) !== -1) {
+    if (size && THUMBNAIL_WIDTH.indexOf(Number.parseInt(size)) !== -1) {
       filePath = `${filePath}_${size}`;
     }
 
@@ -162,6 +162,8 @@ export default class FilesController {
     if (!existsSync(filePath)) {
       return res.sendError('Not found', 404);
     }
+
+    console.log('downloading file:', filePath);
 
     // detect and set content type
     const mimeType = mime.lookup(file.name);
