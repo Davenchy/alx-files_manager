@@ -51,6 +51,13 @@ export const ROOT_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
  */
 export const FILE_QUEUE = 'fileQueue';
 
+/**
+ * The users queue name
+ * @constant
+ * @type {string}
+ */
+export const USER_QUEUE = 'userQueue';
+
 // Thumbnails
 /**
  * Array of different thumbnail sizes

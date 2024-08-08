@@ -4,9 +4,10 @@ import { createReadStream, createWriteStream } from 'fs';
 import { Readable } from 'stream';
 import { ObjectId } from 'mongodb';
 import dbClient from './utils/db';
-import { THUMBNAIL_WIDTH, FILE_QUEUE } from './utils/constants';
+import { THUMBNAIL_WIDTH, FILE_QUEUE, USER_QUEUE } from './utils/constants';
 
 const fileQueue = new BullQueue(FILE_QUEUE);
+const userQueue = new BullQueue(USER_QUEUE);
 
 /**
  * Generate thumbnail file of `width` from the image file at `filePath`.
@@ -55,4 +56,19 @@ fileQueue.process(async (job) => {
   }
 
   THUMBNAIL_WIDTH.forEach((width) => generateThumbnails(file.localPath, width));
+});
+
+userQueue.process(async (job) => {
+  const { userId } = job.data;
+
+  if (!userId) {
+    throw new Error('Missing userId');
+  }
+
+  const user = await dbClient.users.findOne({ _id: new ObjectId(userId) });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  console.log(`Welcome ${user.email}!`);
 });

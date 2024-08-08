@@ -1,5 +1,8 @@
 import { hashPassword } from '../utils/password_hashing';
 import dbClient from '../utils/db';
+import { USER_QUEUE } from '../utils/constants';
+
+const userQueue = new BullQueue(USER_QUEUE);
 
 /**
  * A controller for the users endpoints
@@ -33,6 +36,8 @@ class UsersController {
     });
 
     const user = results.ops[0];
+    userQueue.add({ userId: user._id });
+
     return res.status(201).send({ id: user._id, email: user.email });
   }
 
