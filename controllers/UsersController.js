@@ -1,8 +1,9 @@
+import Queue from 'bull';
 import { hashPassword } from '../utils/password_hashing';
 import dbClient from '../utils/db';
 import { USER_QUEUE } from '../utils/constants';
 
-const userQueue = new BullQueue(USER_QUEUE);
+const userQueue = new Queue(USER_QUEUE);
 
 /**
  * A controller for the users endpoints
