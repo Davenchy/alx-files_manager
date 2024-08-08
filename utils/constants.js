@@ -43,6 +43,14 @@ export const REDIS_PORT = process.env.REDIS_PORT || '6379';
  */
 export const ROOT_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
+// Queue
+/**
+ * The files queue name
+ * @constant
+ * @type {string}
+ */
+export const FILE_QUEUE = 'fileQueue';
+
 // Thumbnails
 /**
  * Array of different thumbnail sizes
