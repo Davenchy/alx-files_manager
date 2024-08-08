@@ -53,7 +53,7 @@ export default class FilesController {
       name,
       type,
       isPublic: isPublic || false,
-      parentId: parentId || 0,
+      parentId: parentId ? new ObjectId(parentId) : 0,
     };
 
     if (type !== 'folder') {
@@ -82,13 +82,18 @@ export default class FilesController {
 
   static async getIndex(req, res) {
     const { userId } = req;
-    const parentId = req.query.parentId || 0;
+    const { parentId } = req.query;
     const page = parseInt(req.query.page, 10) || 0;
     const limit = 20;
 
+    const filter = { userId: new ObjectId(userId) };
+    if (parentId) {
+      filter.parentId = new ObjectId(parentId);
+    }
+
     const documents = await dbClient.files
       .aggregate([
-        { $match: { userId: new ObjectId(userId), parentId } },
+        { $match: filter },
         { $skip: limit * page },
         { $limit: limit },
       ])
